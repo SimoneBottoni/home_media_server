@@ -26,16 +26,29 @@ services:
     networks:
       - ron-net
 
+  # https://docs.linuxserver.io/images/docker-jellyfin/
   jellyfin:
-    image: jellyfin/jellyfin:latest
+    image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin
     restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=Europe/Rome
+      - JELLYFIN_PublishedServerUrl=${JELLYFIN_PublishedServerUrl}
+      - DOCKER_MODS=linuxserver/mods:jellyfin-opencl-intel
     volumes:
       - ${LOCAL_PATH}/jellyfin/config:/config
-      - ${LOCAL_PATH}/jellyfin/cache:/cache
-      - ${NAS_PATH}:/media
+      - ${NAS_PATH}/tv_shows:/data/tvshows
+      - ${NAS_PATH}/anime:/data/anime
+      - ${NAS_PATH}/movies:/data/movies
     ports:
       - "8096:8096"
+      - "7359:7359/udp"
+    group_add:
+      - "992"
+    devices:
+      - /dev/dri:/dev/dri
     networks:
       - ron-net
 
@@ -45,8 +58,8 @@ services:
     container_name: prowlarr
     restart: unless-stopped
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=${PUID}
+      - PGID=${PGID}
       - TZ=Europe/Rome
     volumes:
       - ${LOCAL_PATH}/prowlarr/data:/config
@@ -61,8 +74,8 @@ services:
     container_name: sonarr
     restart: unless-stopped
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=${PUID}
+      - PGID=${PGID}
       - TZ=Europe/Rome
     volumes:
       - ${LOCAL_PATH}/sonarr/data:/config
@@ -80,12 +93,12 @@ services:
     container_name: sonarr_anime
     restart: unless-stopped
     environment:
-      - SONARR_URL=http://192.168.178.34:8989
+      - SONARR_URL=http://sonarr.ron.home
       - ANIMEWORLD_URL=https://www.animeworld.ac
       - API_KEY=${SONARR_APIKEY}
       - TZ=Europe/Rome
-      - PUID=1000
-      - PGID=1000
+      - PUID=${PUID}
+      - PGID=${PGID}
     volumes:
       - ${LOCAL_PATH}/sonarr_anime/data:/src/database
       - ${NAS_PATH}/anime:/anime
@@ -102,8 +115,8 @@ services:
     container_name: radarr
     restart: unless-stopped
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=${PUID}
+      - PGID=${PGID}
       - TZ=Europe/Rome
     volumes:
       - ${LOCAL_PATH}/radarr/data:/config
@@ -120,8 +133,8 @@ services:
     container_name: qbittorrent
     restart: unless-stopped
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=${PUID}
+      - PGID=${PGID}
       - TZ=Europe/Rome
       - WEBUI_PORT=8088
       - TORRENTING_PORT=6881
@@ -140,8 +153,8 @@ services:
     container_name: nginx-proxy
     restart: unless-stopped
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=${PUID}
+      - PGID=${PGID}
       - TZ=Europe/Rome
       - DISABLE_IPV6=true
     volumes:

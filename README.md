@@ -44,13 +44,15 @@ sudo chown -R $USER:$USER /mnt/nas
 
 ### Set the spindowntime for the disk
 ```shell
-sudo hdparm -S 60 /dev/sdb
+sudo hdparm -S 60 /dev/sda1
 ```
 
 Make it permanent modifying `/etc/hdparm.conf`
 ```shell
 # Append
-/dev/sda { spindown_time = 60 }
+/dev/sda1 {
+    spindown_time = 60
+}
 ```
 [Source](https://guide.debianizzati.org/index.php/Hdparm)
 
@@ -74,6 +76,9 @@ Restart the xrdp service:
 ```shell
 sudo systemctl restart xrdp
 ```
+
+Open firewall ports 3389/tcp
+
 
 [Source](https://phoenixnap.com/kb/debian-remote-desktop)
 
@@ -125,6 +130,8 @@ Restart samba
 ```shell
 sudo systemctl restart smbd
 ```
+
+Open firewall ports 445/tcp and 139/tcp
 
 [Source](https://www.siberoloji.com/how-to-set-up-network-attached-storage-nas-in-debian-12-bookworm-system/)
 
