@@ -1,4 +1,20 @@
 services:
+  heimdall:
+    image: lscr.io/linuxserver/heimdall:latest
+    container_name: heimdall
+    restart: unless-stopped
+    ports:
+      - "8888:80"
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - ALLOW_INTERNAL_REQUESTS=true
+    volumes:
+      - ${LOCAL_PATH}/heimdall:/config
+    networks:
+      - ron-net
+
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
@@ -9,7 +25,7 @@ services:
       - "8080:80/tcp"
       - "8443:443/tcp"
     environment:
-      - TZ=Europe/Rome
+      - TZ=${TZ}
       - FTLCONF_webserver_api_password=${PIHOLE_PSW}
       - FTLCONF_dns_listeningMode=ALL
       - FTLCONF_dns_upstreams=1.1.1.1;1.0.0.1;8.8.8.8;8.8.4.4
@@ -34,8 +50,8 @@ services:
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
-      - TZ=Europe/Rome
-      - JELLYFIN_PublishedServerUrl=${JELLYFIN_PublishedServerUrl}
+      - TZ=${TZ}
+      - JELLYFIN_PublishedServerUrl=${JELLYFIN_PUBLISHEDSERVERURL}
       - DOCKER_MODS=linuxserver/mods:jellyfin-opencl-intel
     volumes:
       - ${LOCAL_PATH}/jellyfin/config:/config
@@ -60,7 +76,7 @@ services:
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
-      - TZ=Europe/Rome
+      - TZ=${TZ}
     volumes:
       - ${LOCAL_PATH}/prowlarr/data:/config
     ports:
@@ -76,7 +92,7 @@ services:
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
-      - TZ=Europe/Rome
+      - TZ=${TZ}
     volumes:
       - ${LOCAL_PATH}/sonarr/data:/config
       - ${NAS_PATH}/tv_shows:/tv_shows
@@ -96,7 +112,7 @@ services:
       - SONARR_URL=http://sonarr.ron.home
       - ANIMEWORLD_URL=https://www.animeworld.ac
       - API_KEY=${SONARR_APIKEY}
-      - TZ=Europe/Rome
+      - TZ=${TZ}
       - PUID=${PUID}
       - PGID=${PGID}
     volumes:
@@ -117,7 +133,7 @@ services:
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
-      - TZ=Europe/Rome
+      - TZ=${TZ}
     volumes:
       - ${LOCAL_PATH}/radarr/data:/config
       - ${NAS_PATH}/movies:/movies
@@ -135,7 +151,7 @@ services:
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
-      - TZ=Europe/Rome
+      - TZ=${TZ}
       - WEBUI_PORT=8088
       - TORRENTING_PORT=6881
     volumes:
@@ -155,7 +171,7 @@ services:
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
-      - TZ=Europe/Rome
+      - TZ=${TZ}
       - DISABLE_IPV6=true
     volumes:
       - ${LOCAL_PATH}/nginx-proxy/data:/data
