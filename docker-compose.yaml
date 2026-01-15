@@ -143,6 +143,25 @@ services:
     networks:
       - ron-net
 
+  # https://docs.linuxserver.io/images/docker-bazarr/#usage
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${LOCAL_PATH}/bazarr/config:/config
+      - ${NAS_PATH}/movies:/movies
+      - ${NAS_PATH}/tv_shows:/tv_shows
+      - ${NAS_PATH}/anime:/anime
+    ports:
+      - 6767:6767
+    networks:
+      - ron-net
+
   # https://docs.linuxserver.io/images/docker-qbittorrent/
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
