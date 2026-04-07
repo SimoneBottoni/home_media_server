@@ -34,7 +34,7 @@ sudo mkdir -p /mnt/nas
 sudo mount /dev/sda1 /mnt/nas
 
 # To make this mount permanent, edit /etc/fstab:
-echo '/dev/sda1 /mnt/nas ext4 defaults 0 2' | sudo tee -a /etc/fstab
+echo 'UUID=<UUID> /mnt/nas ext4 defaults,nofail,x-systemd.automount,x-systemd.mount-timeout=60,x-systemd.idle-timeout=60 0 2' | sudo tee -a /etc/fstab
 
 # Edit permissions
 sudo chown -R $USER:$USER /mnt/nas
