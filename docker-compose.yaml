@@ -2,18 +2,22 @@ services:
   portainer:
     container_name: portainer
     image: portainer/portainer-ce:lts
+    pull_policy: always
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${LOCAL_PATH}/portainer/data:/data
     ports:
       - 9000:9000
+    depends_on:
+      - pihole
     networks:
       - ron-net
 
   heimdall:
     image: lscr.io/linuxserver/heimdall:latest
     container_name: heimdall
+    pull_policy: always
     restart: unless-stopped
     ports:
       - "8888:80"
@@ -24,12 +28,15 @@ services:
       - ALLOW_INTERNAL_REQUESTS=true
     volumes:
       - ${LOCAL_PATH}/heimdall:/config
+    depends_on:
+      - pihole
     networks:
       - ron-net
 
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
+    pull_policy: always
     restart: unless-stopped
     ports:
       - "53:53/tcp"
@@ -58,6 +65,7 @@ services:
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin
+    pull_policy: always
     restart: unless-stopped
     environment:
       - PUID=${PUID}
@@ -77,6 +85,8 @@ services:
       - "992"
     devices:
       - /dev/dri:/dev/dri
+    depends_on:
+      - pihole
     networks:
       - ron-net
 
@@ -84,6 +94,7 @@ services:
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
+    pull_policy: always
     restart: unless-stopped
     environment:
       - PUID=${PUID}
@@ -93,6 +104,8 @@ services:
       - ${LOCAL_PATH}/prowlarr/data:/config
     ports:
       - "9696:9696"
+    depends_on:
+      - pihole
     networks:
       - ron-net
 
@@ -100,6 +113,7 @@ services:
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
+    pull_policy: always
     restart: unless-stopped
     environment:
       - PUID=${PUID}
@@ -112,6 +126,8 @@ services:
       - ${DOWNLOAD_PATH}:/downloads
     ports:
       - "8989:8989"
+    depends_on:
+      - pihole
     networks:
       - ron-net
 
@@ -119,6 +135,7 @@ services:
   sonarr_anime:
     image: ghcr.io/mainkronos/anime_downloader:latest
     container_name: sonarr_anime
+    pull_policy: always
     restart: unless-stopped
     environment:
       - SONARR_URL=http://sonarr.ron.home
@@ -134,6 +151,8 @@ services:
       - ${LOCAL_PATH}/sonarr_anime/connections:/src/script
     ports:
       - "5000:5000"
+    depends_on:
+      - pihole
     networks:
       - ron-net
 
@@ -141,6 +160,7 @@ services:
   radarr:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
+    pull_policy: always
     restart: unless-stopped
     environment:
       - PUID=${PUID}
@@ -152,6 +172,8 @@ services:
       - ${DOWNLOAD_PATH}:/downloads
     ports:
       - "7878:7878"
+    depends_on:
+      - pihole
     networks:
       - ron-net
 
@@ -159,6 +181,7 @@ services:
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
     container_name: bazarr
+    pull_policy: always
     restart: unless-stopped
     environment:
       - PUID=${PUID}
@@ -171,6 +194,8 @@ services:
       - ${NAS_PATH}/anime:/anime
     ports:
       - 6767:6767
+    depends_on:
+      - pihole
     networks:
       - ron-net
 
@@ -178,6 +203,7 @@ services:
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
+    pull_policy: always
     restart: unless-stopped
     environment:
       - PUID=${PUID}
@@ -192,12 +218,15 @@ services:
       - "8088:8088"
       - "6881:6881"
       - "6881:6881/udp"
+    depends_on:
+      - pihole
     networks:
       - ron-net
 
   nginx-proxy:
     image: "jc21/nginx-proxy-manager:latest"
     container_name: nginx-proxy
+    pull_policy: always
     restart: unless-stopped
     environment:
       - PUID=${PUID}
@@ -211,6 +240,8 @@ services:
       - "80:80" # Public HTTP Port
       - "443:443" # Public HTTPS Port
       - "81:81" # Admin Web Port
+    depends_on:
+      - pihole
     networks:
       - ron-net
 
