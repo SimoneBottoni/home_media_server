@@ -258,16 +258,14 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
-      ofelia.enabled: "true"
-
       # Restart Pi-hole first
-      ofelia.job-run.restart_pihole.schedule: "0 4 * * 0"
+      ofelia.job-run.restart_pihole.schedule: "0 0 4 * * 0"
       ofelia.job-run.restart_pihole.command: "docker restart pihole"
       ofelia.job-run.restart_pihole.image: "docker:cli"
       ofelia.job-run.restart_pihole.volume: "/var/run/docker.sock:/var/run/docker.sock"
 
       # Restart everything else after 5 minutes
-      ofelia.job-run.restart_others.schedule: "5 4 * * 0"
+      ofelia.job-run.restart_others.schedule: "0 5 4 * * 0"
       ofelia.job-run.restart_others.command: >-
         sh -c 'docker ps --format "{{.Names}}" | grep -vE "^(pihole|ofelia)$" | xargs -r docker restart'
       ofelia.job-run.restart_others.image: "docker:cli"
