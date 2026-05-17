@@ -223,6 +223,7 @@ services:
     networks:
       - ron-net
 
+  # https://github.com/NginxProxyManager/nginx-proxy-manager
   nginx-proxy:
     image: "jc21/nginx-proxy-manager:latest"
     container_name: nginx-proxy
@@ -240,6 +241,26 @@ services:
       - "80:80" # Public HTTP Port
       - "443:443" # Public HTTPS Port
       - "81:81" # Admin Web Port
+    depends_on:
+      - pihole
+    networks:
+      - ron-net
+
+  # https://dockwatch.wiki/pages/misc/composeRun/
+  dockwatch:
+    image: ghcr.io/notifiarr/dockwatch:main
+    container_name: dockwatch
+    pull_policy: always
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${LOCAL_PATH}/dockwatch/config:/config
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "9999:80"
     depends_on:
       - pihole
     networks:
@@ -266,9 +287,9 @@ services:
 
       # Restart everything else after 5 minutes
       ofelia.job-run.restart_others.schedule: "0 5 4 * * 0"
-      ofelia.job-run.restart_others.entrypoint: "/bin/sh -c"
+      ofelia.job-run.restart_others.entrypoint: "/bin/sh"
       ofelia.job-run.restart_others.command: >-
-        docker ps --format '{{.Names}}' | grep -vE '^(pihole|ofelia)$' | xargs -r docker restart
+        -c "docker ps --format '{{.Names}}' | grep -vE '^(pihole|ofelia)$' | xargs -r docker restart"
       ofelia.job-run.restart_others.image: "docker:cli"
       ofelia.job-run.restart_others.volume: "/var/run/docker.sock:/var/run/docker.sock"
     depends_on:
