@@ -78,6 +78,7 @@ services:
       - ${NAS_PATH}/tv_shows:/data/tvshows
       - ${NAS_PATH}/anime:/data/anime
       - ${NAS_PATH}/movies:/data/movies
+      - /dev/shm:/transcode
     ports:
       - "8096:8096"
       - "7359:7359/udp"
