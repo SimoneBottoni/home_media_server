@@ -246,57 +246,6 @@ services:
     networks:
       - ron-net
 
-  # https://dockwatch.wiki/pages/misc/composeRun/
-  dockwatch:
-    image: ghcr.io/notifiarr/dockwatch:main
-    container_name: dockwatch
-    pull_policy: always
-    restart: unless-stopped
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - ${LOCAL_PATH}/dockwatch/config:/config
-      - /var/run/docker.sock:/var/run/docker.sock
-    ports:
-      - "9999:80"
-    depends_on:
-      - pihole
-    networks:
-      - ron-net
-
-  ofelia:
-    image: mcuadros/ofelia:latest
-    container_name: ofelia
-    pull_policy: always
-    restart: unless-stopped
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    command: daemon --docker
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    labels:
-      # Restart Pi-hole first
-      ofelia.job-run.restart_pihole.schedule: "0 0 4 * * 0"
-      ofelia.job-run.restart_pihole.command: "docker restart pihole"
-      ofelia.job-run.restart_pihole.image: "docker:cli"
-      ofelia.job-run.restart_pihole.volume: "/var/run/docker.sock:/var/run/docker.sock"
-
-      # Restart everything else after 5 minutes
-      ofelia.job-run.restart_others.schedule: "0 5 4 * * 0"
-      ofelia.job-run.restart_others.entrypoint: "/bin/sh"
-      ofelia.job-run.restart_others.command: >-
-        -c "docker ps --format '{{.Names}}' | grep -vE '^(pihole|ofelia)$' | xargs -r docker restart"
-      ofelia.job-run.restart_others.image: "docker:cli"
-      ofelia.job-run.restart_others.volume: "/var/run/docker.sock:/var/run/docker.sock"
-    depends_on:
-      - pihole
-    networks:
-      - ron-net
-
 networks:
   ron-net:
     driver: bridge
